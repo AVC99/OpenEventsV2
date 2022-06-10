@@ -1,0 +1,30 @@
+[
+    {
+    "id": 10,
+    "name": "Drawing Meet Up of the month: January",
+    "owner_id": 1,
+    "date": "2022-01-01T12:00:00.000Z",
+    "image": "https://i.imgur.com/Ou3LVpb.jpg",
+    "location": "Barcelona",
+    "description": "Come paint with a group of artists. Bring your own materials and canvas.",
+    "eventStart_date": "2022-01-12T15:00:00.000Z",
+    "eventEnd_date": "2022-01-12T17:30:00.000Z",
+    "n_participators": 50,
+    "slug": null,
+    "type": "Arts"
+    },
+    {
+    "id": 12,
+    "name": "Drawing 101: Portraits",
+    "owner_id": 1,
+    "date": "2022-01-19T12:00:00.000Z",
+    "image": "https://i.imgur.com/JprpLyc.jpg",
+    "location": "Barcelona",
+    "description": "Learn the basics of portrait drawing with a professional artist with +10 years of experience.",
+    "eventStart_date": "2022-01-20T12:00:00.000Z",
+    "eventEnd_date": "2022-01-20T13:30:00.000Z",
+    "n_participators": 20,
+    "slug": null,
+    "type": "Education"
+    }
+    ]

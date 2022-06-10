@@ -40,6 +40,22 @@ class GenericDAO {
         return results;
     }
 
+    async isValidToken(req) {
+        if (!req.headers.authorization) {
+            console.log("No token");
+            return false;
+        }
+        const token = req.headers['authorization'].split(' ')[1]
+        const jwt = require('jsonwebtoken')
+        try {
+            jwt.verify(token, process.env.JWT_SECRET)
+            return true
+        }
+        catch (error) {
+            return false
+        }
+    }
+
     //TODO: INSERT, UPDATE, DELETE
 }
 
