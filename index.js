@@ -18,6 +18,13 @@ const eventsRoute= require('./routes/events.route');
 //const assistancesRoute= require('./routes/assistances_route');
 //const messagesRoute= require('./routes/messages_route');
 
+// logs requests to console
+app.use(morgan('tiny'))
+// sets security headers
+app.use(helmet());
+
+
+
 app.use("/users" , usersRoute);
 app.use("/events", eventsRoute);
 //app.use("/friends", friendsRoute);
@@ -25,10 +32,6 @@ app.use("/events", eventsRoute);
 //app.use("/messages", messagesRoute);
 
 
-// logs requests to console
-app.use(morgan('tiny'))
-// sets security headers
-app.use(helmet());
 
 
 app.get('/', (req, res) => {

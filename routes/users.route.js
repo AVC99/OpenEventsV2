@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
         if (user[0].password === req.body.password) {
             // create a token
             const jwt = require('jsonwebtoken')
-            const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET)
+            const token = jwt.sign({ id: user[0].id, name: user[0].name, email: user[0].email }, process.env.JWT_KEY)
 
             res.status(200).json({
                 acccess_token: token
