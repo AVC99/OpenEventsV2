@@ -39,6 +39,20 @@ router.get('/users', async (req, res) => {
     }
 })
 
+router.get('/:id', async (req, res) => {
+    if(mdao.isValidToken(req)) {
+        if(!isNaN(req.params.id)){
+            try{
+                const messages = await mdao.getMessagesBetweenAuthenticatedUserAndUser(mdao.getIdFromDecodedToken(req), req.params.id)
+                return res.status(200).json(messages)
+            }catch(error){
+                return res.status(500).send("Error while loading messages")
+            } 
+        }
+    }res.status(401).send("Invalid token")
+
+})
+
 
 
 module.exports = router;

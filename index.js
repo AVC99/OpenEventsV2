@@ -16,8 +16,8 @@ const usersRoute = require('./routes/users.route');
 const eventsRoute= require('./routes/events.route');
 const friendsRoute= require('./routes/friends.route');
 const assistancesRoute= require('./routes/assistances.route');
-const messagesRoute= require('./routes/messages_route');
-const assistancesRoute= require('./routes/assistances_route');
+const messagesRoute= require('./routes/messages.route');
+
 
 // logs requests to console
 app.use(morgan('tiny'));

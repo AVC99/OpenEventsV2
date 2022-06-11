@@ -20,6 +20,12 @@ class MessagesDAO extends GenericDAO {
 
         return results;
     }
+    async getMessagesBetweenAuthenticatedUserAndUser(user_id, id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT * FROM ?? WHERE (user_id_send = ? AND user_id_recived = ?) OR (user_id_send = ? AND user_id_recived = ?)", [this.tabla,user_id, id, id, user_id])
+
+        return results;
+    }
 }
 
 module.exports = MessagesDAO;
