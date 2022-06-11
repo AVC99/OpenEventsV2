@@ -3,6 +3,7 @@ const router = express.Router()
 
 const MessagesDAO = require("../DAO/messages_DAO.js");
 const mdao = new MessagesDAO()
+const serverStatus= require('../server_status');
 
 const UsersDAO = require("../DAO/users_DAO.js");
 const udao = new UsersDAO()

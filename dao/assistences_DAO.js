@@ -26,6 +26,9 @@ class AssistencesDAO extends GenericDAO {
         "WHERE user_id = ? AND event_id = ?", 
         [this.tabla, assistance.user_id, assistance.event_id, assistance.puntuation, assistance.comentary, user_id, id ]);
     }
+    async createAssistance(req){
+        await global.connection.promise().query("INSERT INTO ?? (user_id, event_id) VALUES (?, ?)",[this.tabla, req.params.user_id, req.params.event_id]);
+    }
 }
 
 module.exports= AssistencesDAO;

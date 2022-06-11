@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const serverStatus= require('../server_status');
 
 const FriendsDAO = require("../dao/friends_DAO.js");
 const fdao = new FriendsDAO()

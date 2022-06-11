@@ -1,6 +1,7 @@
 const req = require('express')
 const jwt = require('jsonwebtoken')
 const router = req.Router()
+const serverStatus= require('../server_status');
 
 const EventsDAO = require("../DAO/events_DAO.js");
 const eventsDAO = new EventsDAO();
