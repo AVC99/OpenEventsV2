@@ -15,11 +15,11 @@ app.use(express.json()) // convierte el body (bytes) -> objeto json
 const usersRoute = require('./routes/users.route');
 const eventsRoute= require('./routes/events.route');
 const friendsRoute= require('./routes/friends.route');
-//const assistancesRoute= require('./routes/assistances_route');
+const assistancesRoute= require('./routes/assistances.route');
 //const messagesRoute= require('./routes/messages_route');
 
 // logs requests to console
-app.use(morgan('tiny'))
+app.use(morgan('tiny'));
 // sets security headers
 app.use(helmet());
 
@@ -28,7 +28,7 @@ app.use(helmet());
 app.use("/users" , usersRoute);
 app.use("/events", eventsRoute);
 app.use("/friends", friendsRoute);
-//app.use("/assistances", assistancesRoute);
+app.use("/assistances", assistancesRoute);
 //app.use("/messages", messagesRoute);
 
 

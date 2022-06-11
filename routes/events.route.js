@@ -6,11 +6,11 @@ const EventsDAO = require("../DAO/events_DAO.js");
 const eventsDAO = new EventsDAO();
 const UsersDAO = require("../DAO/users_DAO.js");
 const usersDAO = new UsersDAO();
-const AssistenceDAO= require("../DAO/assistences_DAO.js");
+const AssistenceDAO = require("../DAO/assistences_DAO.js");
 const assistenceDAO = new AssistenceDAO();
 const validator = require("../validator.js");
 
-//TODO AUTHORIZATION SHENENIGANS
+
 
 router.post('/', async (req, res) => {
     if (await eventsDAO.isValidToken(req)) {
@@ -55,11 +55,35 @@ router.post('/', async (req, res) => {
                 }
             }
 
-            //TODO error handling
 
         }
         res.status(401).send("Unauthorized");
     }
+})
+
+router.put('/:id/assistances', async (req, res) => {
+    console.log("entra");
+    if (await eventsDAO.isValidToken(req)) {
+        if (!isNaN(req.params.id)) {
+
+            try {
+                let user_id = usersDAO.getIdFromDecodedToken(req);
+                let assistance= await assistenceDAO.getAssistancesByEventAndOwnerID(req.params.id, user_id);
+                if (assistance) {
+                    if (req.body.user_id) assistance.user_id = req.body.user_id;
+                    if (req.body.event_id) assistance.event_id = req.body.event_id;
+                    if (req.body.puntuation) assistance.puntuation = req.body.puntuation;
+                    if (req.body.comentary) assistance.comentary = req.body.comentary;
+                }
+            
+                await assistenceDAO.modifyAssitanceByIdAsAuthenticated(assistance,user_id, req.params.id); 
+                return res.status(200).send(assistance);
+            } catch (error) {
+                console.log(error);
+                return res.status(500).send("Error updating the event");
+            }
+        }
+    } return res.status(401).send("Unauthorized");
 })
 
 router.put('/:id', async (req, res) => {
@@ -93,8 +117,6 @@ router.put('/:id', async (req, res) => {
     }
     res.status(401).send("Unauthorized");
 })
-
-
 
 router.delete('/:id', async (req, res) => {
     if (await eventsDAO.isValidToken(req)) {
@@ -145,12 +167,12 @@ router.get('/search', async (req, res) => {
             }
             console.log(events)
 
-            events= events.filter(event => {
-                if(event.name.toLowerCase().includes(keyword.toLowerCase())){
-                    if(event.location.toLowerCase().includes(location.toLowerCase())){
-                       
-                        let eventStart= new Date(event.eventStart_date).toISOString().split('T')[0];
-                        
+            events = events.filter(event => {
+                if (event.name.toLowerCase().includes(keyword.toLowerCase())) {
+                    if (event.location.toLowerCase().includes(location.toLowerCase())) {
+
+                        let eventStart = new Date(event.eventStart_date).toISOString().split('T')[0];
+
                         return eventStart.includes(date);
                     }
                 }
@@ -160,7 +182,7 @@ router.get('/search', async (req, res) => {
             res.status(500).send("Error getting events search");
         }
 
-    }res.status(401).send("Unauthorized");
+    } res.status(401).send("Unauthorized");
 })
 
 /**
@@ -208,13 +230,13 @@ router.get('/:id/assistences', async (req, res) => {
     }
 })
 
-router.delete('/:id/assistances',async(req,res)=>{
+router.delete('/:id/assistances', async (req, res) => {
     if (eventsDAO.isValidToken(req)) {
-        let id= req.params.id;
+        let id = req.params.id;
         if (!isNaN(id)) {
             try {
-                let user_id= eventsDAO.getIdFromDecodedToken(req);
-                await assistenceDAO.deleteAssistanceFromEvent(id,user_id);
+                let user_id = eventsDAO.getIdFromDecodedToken(req);
+                await assistenceDAO.deleteAssistanceFromEvent(id, user_id);
                 //return event
                 return res.status(200).send("Assistance deleted");
             } catch (error) {
@@ -228,8 +250,6 @@ router.delete('/:id/assistances',async(req,res)=>{
     }
     res.status(401).send("Unauthorized");
 })
-
-
 
 router.get('/', async (req, res) => {
     try {

@@ -65,17 +65,6 @@ class GenericDAO {
         const token = req.headers.authorization.split(" ")[1];
         return token;
     }
-    getIdFromDecodedToken(req){
-        const token = req.headers['authorization'].split(' ')[1]
-
-        const jwt = require('jsonwebtoken')
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_KEY);
-            return decoded.id;
-        } catch (error) {
-            return false
-        }
-    }
 
     getIdFromDecodedToken(req){
         const token = req.headers['authorization'].split(' ')[1]
@@ -89,7 +78,6 @@ class GenericDAO {
         }
     }
 
-    //TODO: INSERT, UPDATE, DELETE
 }
 
 module.exports = GenericDAO
