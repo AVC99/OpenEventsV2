@@ -12,7 +12,7 @@ class UsersDAO extends GenericDAO {
 
     async getUserById(id) {
         const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE id = ?", [this.tabla, id])
-        return results;
+        return results[0];
     }
 
     async isExistingUser(email) {
@@ -25,6 +25,11 @@ class UsersDAO extends GenericDAO {
         const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE name LIKE ? OR last_name LIKE ? OR email LIKE ?" , 
         [this.tabla, "%" + keyWord + "%", "%" + keyWord + "%", "%" + keyWord + "%"])
         return results;
+    }
+
+    async updateUser(user){
+        await global.connection.promise().query("UPDATE ?? SET name = ?, last_name = ?, email = ?, password = ?, image = ? WHERE id = ?",
+        [this.tabla, user.name, user.last_name, user.email, user.password, user.image, user.id]) // updating the user       
     }
 
     // get average of the ratings of a user in assistance table
