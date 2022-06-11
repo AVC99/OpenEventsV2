@@ -136,25 +136,38 @@ router.delete('/:id', async (req, res) => {
         }
     } res.status(401).send("Unauthorized");
 })
-
+//Gets all future events in descending order based on the average score of the creator's old events
 router.get('/best', async (req, res) => {
+    //TODO try doing by js 
     if (eventsDAO.isValidToken(req)) {
-
-        let currentDate = new Date();
         try {
-            let events = await eventsDAO.getFutureEvents();
-            //TODO que puto follon lo de ordenar por puntuacion del usuario idea subconsulta 
-            //check if there are events
-            if (events.length === 0) {
-                res.status(404).send("No future events found")
-            }
-            //return events
-            res.status(200).json(events);
-        } catch (error) {
-            //return error
-            res.status(500).send("Error getting events best");
+            let allUsers= await usersDAO.getAll();
+            let events= await eventsDAO.getAll();
+            var userScoreArray= [];
+            
+            for (const user of allUsers) {
+                let totaluserScore= 0;
+                for (const event of events) {
+                   let score=await usersDAO.getUserStatisticsAvgScoreOfOldEvents(user.id, event.id);
+                  totaluserScore= totaluserScore+score;
+                  console.log(totaluserScore);
+                   //userScoreArray.score = await usersDAO.getUserStatisticsAvgScoreOfOldEvents(user.id);
+                }
+                let userScore={
+                    user_id: user.id,
+                    score: totaluserScore
+               }
+               Array.prototype.push.call(userScoreArray, userScore);
+            };
+            console.log(userScoreArray)
+            
+            return res.status(200).send(userScoreArray);
+        }catch(error){
+            console.log(error);
+            return res.status(500).send("Error getting the users");
         }
     }
+    res.status(401).send("Unauthorized");
 })
 
 router.get('/search', async (req, res) => {

@@ -55,6 +55,14 @@ class UsersDAO extends GenericDAO {
 
         return results;
     }
+    async getUserStatisticsAvgScoreOfOldEvents(user_id, event_id) {
+        const [results] = await global.connection.promise()
+            .query("SELECT AVG(a.puntuation)FROM assistance AS a, events AS e WHERE a.user_id = ? AND e.id = ? AND "+
+            " e.eventEnd_date < NOW()", 
+            [user_id, event_id])
+
+        return results;
+    }
 
     // get the percentage of users with less comments than the user
     async getUserStatisticsPercentageComments(id) {
