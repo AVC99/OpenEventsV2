@@ -38,4 +38,10 @@ router.put('/:user_id/:event_id',async(req, res)=>{
     }res.status(401).send("Unauthorized");
 })
 
+router.post('/:user_id/:event_id', async(req, res) => {
+    if ( assistanceDAO.isValidToken(req)) {
+    
+    }return res.status(401).send("Unauthorized");
+})
+
 module.exports=router;
