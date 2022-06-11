@@ -32,11 +32,50 @@ class UsersDAO extends GenericDAO {
         [this.tabla, user.name, user.last_name, user.email, user.password, user.image, user.id]) // updating the user       
     }
 
+    async countAllUsers() {
+        const [results] = await global.connection.promise()
+        .query("SELECT COUNT(*) as num_users FROM users")
+
+        return results;
+    }
+
     // get average of the ratings of a user in assistance table
-    async getUserStatistics(id) {
-        /* 💢💢💢💢 */ 
-            TODO
-        /* 💢💢💢💢 */
+    async getUserStatisticsNumComments(id) {
+        const [results] = await global.connection.promise()
+            .query("SELECT COUNT(*) as num_comments FROM assistance WHERE user_id = ? AND comentary IS NOT NULL",
+            [id])
+
+        return results;
+    }
+
+    // get average of the ratings of a user in assistance table
+    async getUserStatisticsAvgScore(id) {
+        const [results] = await global.connection.promise()
+            .query("SELECT ROUND(AVG(puntuation), 2) as avg_score FROM assistance WHERE user_id = ?", [id])
+
+        return results;
+    }
+
+    // get the percentage of users with less comments than the user
+    async getUserStatisticsPercentageComments(id) {
+        // get of all the users
+        this.num_users = await this.getAll();
+        let numberOfCommenterBelow = 0;
+
+        let num_comments = await this.getUserStatisticsNumComments(id);
+
+        for (const user of this.num_users) {
+            if (user.id !== id) {
+                const [results] = await global.connection.promise()
+                    .query(`SELECT COUNT(*) AS num_comments FROM assistance WHERE user_id = ${user.id} AND comentary IS NOT NULL`)
+                let numOtherUserComments = results[0]
+
+                if (num_comments[0].num_comments > numOtherUserComments['num_comments']) {
+                    numberOfCommenterBelow++;
+                }
+            }
+        }
+        return (numberOfCommenterBelow * 100) / this.num_users.length
     }
     
     async createUser(user) {
@@ -78,7 +117,22 @@ class UsersDAO extends GenericDAO {
 
     async getUserFriends (id) {
         const [results] = await global.connection.promise()
-        .query("SELECT * FROM users WHERE id = (SELECT user_id_friend FROM friends WHERE user_id = ? AND status = 1)", [id])
+        .query("SELECT * FROM ?? WHERE id = (SELECT user_id_friend FROM friends WHERE user_id = ? AND status = 1)", this.tabla, [id])
+
+        return results;
+    }
+
+    async deleteUser(id) {
+        const [results] = await global.connection.promise()
+        .query("DELETE FROM ?? WHERE id = ?", [this.tabla, id])
+
+        return results;
+    }
+
+    // Gets all events with assistance by user with matching id
+    async getUserAssistanceEvents(id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT * FROM events WHERE id = (SELECT event_id from assistance where user_id = ?)", [id])
 
         return results;
     }

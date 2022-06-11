@@ -103,21 +103,6 @@ router.get('/search/:keyword', async (req, res) => {
     }
 })
 
-// GET of the user statistics by user id
-router.get('/:id/statistics', async (req, res) => {
-    if (await udao.isValidToken(req)) {
-        const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
-            res.status(404).json({ message: "User not found" })
-        } else {
-            const statistics = await udao.getUserStatistics(req.params.id)
-            res.status(200).json(statistics)
-        }
-    } else {
-        res.status(401).json({ message: "Access denied" })
-    }
-})
-
 // GET of events created by matching user id
 router.get('/:id/events', async (req, res) => {
     if (await udao.isValidToken(req)) {
@@ -212,5 +197,35 @@ router.put('/', async (req, res) => {
     res.status(serverStatus.UNAUTHORIZED).send("Unauthorized");
 })
 
+// GET user statistics by user id
+router.get('/:id/statistics', async (req, res) => {
+    if (await udao.isValidToken(req)) {
+        const user = await udao.getUserById(req.params.id)
+        if (user.length === 0) {
+            res.status(404).json({ message: "User not found" })
+        } else {
+            const stats1 = await udao.getUserStatisticsAvgScore(req.params.id)
+            const stats2 = await udao.getUserStatisticsNumComments(req.params.id)
+            const stats3 = await udao.getUserStatisticsPercentageComments(req.params.id)
+
+            res.status(200).json({
+                avg_score: stats1[0].avg_score,
+                num_comments: stats2[0].num_comments,
+                percentage_commenters_below: stats3
+            })
+        }
+    }
+})
+
+// DELETE of authenticated user
+router.delete('/', async (req, res) => {
+    if (await udao.isValidToken(req)) {
+        await udao.deleteUser(udao.getIdFromDecodedToken(req))
+        res.status(200).json({ message: "User deleted!!!" })
+
+    } else {
+        res.status(401).json({ message: "Access denied" })
+    }
+})
 
 module.exports = router;
