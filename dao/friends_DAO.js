@@ -5,31 +5,47 @@ class FriendsDAO extends GenericDAO {
         super('friends');
     }
 
-    async getByFirstId(id) {
-        const [results] = await global.connection.promise.query("SELECT * FROM ?? WHERE user_id = ?", [this.tabla, id])
+    async getAllFriendsByUserId(id) {
+        const [results] = await global.connection.promise().query("SELECT * FROM users WHERE id = (SELECT user_id_friend FROM ?? WHERE user_id = ? AND status = 1)", [this.tabla, id])
         return results;
     }
 
-    async getBySecondID(id) {
-        const [results] = await global.connection.promise.query("SELECT * FROM ?? WHERE user_id_friend = ?", [this.tabla, id])
+    async createFriendRequest(id, idFriend) {
+        const [results] = await global.connection.promise()
+        .query("INSERT INTO ?? (user_id, user_id_friend, status) VALUES (?, ?, ?)",
+        [this.tabla, id, idFriend, 0])
+
         return results;
     }
 
-    async getStatusByFirstID(id) {
-        const [results] = await global.connection.promise.query("SELECT status FROM ?? WHERE user_id = ?", [this.tabla, email])
-        return results;
-    }
-    async getStatusBySecondID(id) {
-        const [results] = await global.connection.promise.query("SELECT status FROM ?? WHERE user_id_friend = ?", [this.tabla, email])
+    async getAllFriendRequestsByUserId(id) {
+        const [results] = await global.connection.promise().query("SELECT * FROM users WHERE id = (SELECT user_id_friend FROM ?? WHERE user_id = ? AND status = 0)", [this.tabla, id])
         return results;
     }
 
-    async getStatusByFirstIDAndSecondID(id, idFriend) {
-        const [results] = await global.connection.promise.query("SELECT status FROM ?? WHERE user_id = ? AND user_id_friend = ?", [this.tabla, id, idFriend])
+    async acceptFriendRequest(id, idFriend) {
+        const [results] = await global.connection.promise()
+        .query("UPDATE ?? SET status = 1 WHERE user_id = ? AND user_id_friend = ?",
+        [this.tabla, idFriend, id])
+
         return results;
     }
-    //TODO: INSERT, UPDATE, DELETE
-    
+
+    async insertAcceptedFriend(id, idFriend) {
+        const [results] = await global.connection.promise()
+        .query("INSERT INTO ?? (user_id, user_id_friend, status) VALUES (?, ?, ?)",
+        [this.tabla, id, idFriend, 1])
+
+        return results;
+    }
+
+    async declineFriendRequest(id, idFriend) {
+        const [results] = await global.connection.promise()
+        .query("DELETE FROM ?? WHERE user_id = ? AND user_id_friend = ?",
+        [this.tabla, idFriend, id])
+
+        return results;
+    }
 }
 
 module.exports = FriendsDAO;

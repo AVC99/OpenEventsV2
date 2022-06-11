@@ -111,5 +111,57 @@ router.get('/:id/statistics', async (req, res) => {
     }
 })
 
+// GET of events created by matching user id
+router.get('/:id/events', async (req, res) => {
+    if (await udao.isValidToken(req)) {
+        const user = await udao.getUserById(req.params.id)
+        if (user.length === 0) {
+            res.status(404).json({ message: "User not found" })
+        } else {
+            const events = await udao.getUserEvents(req.params.id)
+            res.status(200).json(events)
+        }
+    }
+})
+
+// GET events in the future created by user with matching id
+router.get('/:id/events/future', async (req, res) => {
+    if (await udao.isValidToken(req)) {
+        const user = await udao.getUserById(req.params.id)
+        if (user.length === 0) {
+            res.status(404).json({ message: "User not found" })
+        } else {
+            const events = await udao.getUserFutureEvents(req.params.id)
+            res.status(200).json(events)
+        }
+    }
+})
+
+// GET past events created by user with matching id
+router.get('/:id/events/finished', async (req, res) => {
+    if (await udao.isValidToken(req)) {
+        const user = await udao.getUserById(req.params.id)
+        if (user.length === 0) {
+            res.status(404).json({ message: "User not found" })
+        } else {
+            const events = await udao.getUserPastEvents(req.params.id)
+            res.status(200).json(events)
+        }
+    }
+})
+
+// GET current events created by user with matching id
+router.get('/:id/events/current', async (req, res) => {
+    if (await udao.isValidToken(req)) {
+        const user = await udao.getUserById(req.params.id)
+        if (user.length === 0) {
+            res.status(404).json({ message: "User not found" })
+        } else {
+            const events = await udao.getUserCurrentEvents(req.params.id)
+            res.status(200).json(events)
+        }
+    }
+})
+
 
 module.exports = router;

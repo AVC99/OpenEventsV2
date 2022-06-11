@@ -47,8 +47,33 @@ class UsersDAO extends GenericDAO {
         return results;
     }
 
-    //TODO: INSERT, UPDATE, DELETE
+    async getUserEvents (id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT * FROM events WHERE owner_id = ?", [id])
 
+        return results;
+    }
+
+    async getUserFutureEvents (id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT * FROM events WHERE owner_id = ? AND eventStart_date > NOW()", [id])
+
+        return results;
+    }
+
+    async getUserPastEvents (id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT * FROM events WHERE owner_id = ? AND eventEnd_date < NOW()", [id])
+
+        return results;
+    }
+
+    async getUserCurrentEvents (id) {
+        const [results] = await global.connection.promise()
+          .query("SELECT * FROM events WHERE owner_id = ? AND eventStart_date < NOW() AND eventEnd_date > NOW()", [id])
+
+        return results;
+    }
 }
 
 module.exports = UsersDAO;

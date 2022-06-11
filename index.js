@@ -14,7 +14,7 @@ app.use(express.json()) // convierte el body (bytes) -> objeto json
 // ROUTES 
 const usersRoute = require('./routes/users.route');
 const eventsRoute= require('./routes/events.route');
-//const friendsRoute= require('./routes/friends_route');
+const friendsRoute= require('./routes/friends.route');
 //const assistancesRoute= require('./routes/assistances_route');
 //const messagesRoute= require('./routes/messages_route');
 
@@ -27,7 +27,7 @@ app.use(helmet());
 
 app.use("/users" , usersRoute);
 app.use("/events", eventsRoute);
-//app.use("/friends", friendsRoute);
+app.use("/friends", friendsRoute);
 //app.use("/assistances", assistancesRoute);
 //app.use("/messages", messagesRoute);
 
