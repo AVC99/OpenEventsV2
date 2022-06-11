@@ -5,24 +5,20 @@ class UsersDAO extends GenericDAO {
         super('users');
     }
 
-    async getUserById(id) {
-        const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE id = ?", [this.tabla, id])
-        return results;
-    }
     async getUserByEmail(email) {
         const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE email = ?", [this.tabla, email])
         return results;
     }
 
-    
+    async getUserById(id) {
+        const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE id = ?", [this.tabla, id])
+        return results;
+    }
+
     async isExistingUser(email) {
         const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE email = ?" , [this.tabla, email])
         // checking if email is exactly the same as the one in the database
-        if (results.length === 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return results.length !== 0;
     }
 
     async getUserByKeyWord(keyWord) {
@@ -34,7 +30,7 @@ class UsersDAO extends GenericDAO {
     // get average of the ratings of a user in assistance table
     async getUserStatistics(id) {
         /* 💢💢💢💢 */ 
-              TODO
+            TODO
         /* 💢💢💢💢 */
     }
     
@@ -71,6 +67,13 @@ class UsersDAO extends GenericDAO {
     async getUserCurrentEvents (id) {
         const [results] = await global.connection.promise()
           .query("SELECT * FROM events WHERE owner_id = ? AND eventStart_date < NOW() AND eventEnd_date > NOW()", [id])
+
+        return results;
+    }
+
+    async getUserFriends (id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT * FROM users WHERE id = (SELECT user_id_friend FROM friends WHERE user_id = ? AND status = 1)", [id])
 
         return results;
     }

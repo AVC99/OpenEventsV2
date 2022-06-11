@@ -163,5 +163,18 @@ router.get('/:id/events/current', async (req, res) => {
     }
 })
 
+// GET all friends of a user with matching id
+router.get('/:id/friends', async (req, res) => {
+    if (await udao.isValidToken(req)) {
+        const user = await udao.getUserById(req.params.id)
+        if (user.length === 0) {
+            res.status(404).json({ message: "User not found" })
+        } else {
+            const friends = await udao.getUserFriends(req.params.id)
+            res.status(200).json(friends)
+        }
+    }
+})
+
 
 module.exports = router;
