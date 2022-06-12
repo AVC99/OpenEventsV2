@@ -12,7 +12,7 @@ class UsersDAO extends GenericDAO {
 
     async getUserById(id) {
         const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE id = ?", [this.tabla, id])
-        return results[0];
+        return results;
     }
 
     async isExistingUser(email) {
@@ -137,10 +137,44 @@ class UsersDAO extends GenericDAO {
         return results;
     }
 
-    // Gets all events with assistance by user with matching id
     async getUserAssistanceEvents(id) {
         const [results] = await global.connection.promise()
-        .query("SELECT * FROM events WHERE id = (SELECT event_id from assistance where user_id = ?)", [id])
+        .query("SELECT e.* FROM events AS e, assistance as a WHERE e.id = a.event_id AND a.user_id = ?;", [id])
+
+        return results;
+    }
+
+    async getUserFutureAssistanceEvents(id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT e.* FROM events AS e, assistance as a WHERE e.id = a.event_id AND a.user_id = ? AND e.eventStart_date > NOW();", [id])
+
+        return results;
+    }
+
+    async getUserPastAssistanceEvents(id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT e.* FROM events AS e, assistance as a WHERE e.id = a.event_id AND a.user_id = ? AND e.eventEnd_date < NOW();", [id])
+
+        return results;
+    }
+
+    async getEventPastAssistanceEvents(id) {
+        const [results] = await global.connection.promise()
+            .query("SELECT e.* FROM events AS e, assistance as a WHERE e.id = a.event_id AND a.user_id = ? AND e.eventEnd_date < NOW();", [id])
+
+        return results;
+    }
+
+    async getUserAssistanceComments(id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT puntuation, comentary from assistance WHERE user_id = ?", [id])
+
+        return results;
+    }
+
+    async getUserAssistanceCommentsByEvent(id) {
+        const [results] = await global.connection.promise()
+        .query("SELECT puntuation, comentary from assistance WHERE event_id = ?", [id])
 
         return results;
     }
