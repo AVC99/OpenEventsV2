@@ -133,9 +133,10 @@ router.get('/:id/events/future', async (req, res) => {
 
 // GET past events created by user with matching id
 router.get('/:id/events/finished', async (req, res) => {
+
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const events = await udao.getUserPastEvents(req.params.id)
@@ -184,6 +185,7 @@ router.put('/', async (req, res) => {
                     const salt = await bcrypt.genSalt(10);
                     const hash = await bcrypt.hash(bodyPassword, salt);
                     user.password = hash;
+                    
                 }
                 if (req.body.image) user.image = req.body.image;
                 await udao.updateUser(user);

@@ -19,7 +19,8 @@ class FriendsDAO extends GenericDAO {
     }
 
     async getAllFriendRequestsByUserId(id) {
-        const [results] = await global.connection.promise().query("SELECT * FROM users WHERE id = (SELECT user_id_friend FROM ?? WHERE user_id = ? AND status = 0)", [this.tabla, id])
+        const [results] = await global.connection.promise().query("SELECT * FROM users AS u, friends AS f WHERE u.id =f.user_id_friend "+
+         " AND u.id=? AND status=0;", [this.tabla, id])
         return results;
     }
 
@@ -28,6 +29,11 @@ class FriendsDAO extends GenericDAO {
         .query("UPDATE ?? SET status = 1 WHERE user_id = ? AND user_id_friend = ?",
         [this.tabla, idFriend, id])
 
+        return results;
+    }
+
+    async getFriendRequest(id, idFriend) {
+        const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE user_id = ? AND user_id_friend = ?", [this.tabla, id, idFriend])
         return results;
     }
 
@@ -40,11 +46,8 @@ class FriendsDAO extends GenericDAO {
     }
 
     async declineFriendRequest(id, idFriend) {
-        const [results] = await global.connection.promise()
-        .query("DELETE FROM ?? WHERE user_id = ? AND user_id_friend = ?",
-        [this.tabla, idFriend, id])
-
-        return results;
+    await global.connection.promise().query("DELETE FROM ?? WHERE user_id = ? AND user_id_friend = ?",
+        [this.tabla, id, idFriend])
     }
 }
 

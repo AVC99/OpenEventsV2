@@ -13,8 +13,12 @@ router.get('/:user_id/:event_id', async (req, res) => {
     if (assistanceDAO.isValidToken(req)) {
         if (!isNaN(req.params.user_id) && !isNaN(req.params.event_id)) {
             try {
-                const assistances = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.user_id, req.params.event_id);
-                return res.status(serverStatus.OK).json(assistances);
+                const assistances = await assistanceDAO.getAssistancesByEventAndOwnerID( req.params.event_id ,req.params.user_id);
+                if (assistances){
+                    return res.status(serverStatus.OK).json(assistances);
+                }
+                return res.status(serverStatus.NOT_FOUND).send("Assistance not found");
+                
             } catch (error) {
                 return res.status(serverStatus.INTERNAL_SERVER_ERROR).send(error);
             }
@@ -31,7 +35,7 @@ router.put('/:user_id/:event_id', async (req, res) => {
             try {
                 const authID = assistanceDAO.getIdFromDecodedToken(req);
                 if (authID == req.params.user_id) {
-                    const assistance = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.user_id, req.params.event_id);
+                    const assistance = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.event_id , req.params.user_id);
                     if (assistance) {
                         if (req.body.user_id) assistance.user_id = req.body.user_id;
                         if (req.body.event_id) assistance.event_id = req.body.event_id;
@@ -61,7 +65,7 @@ router.post('/:user_id/:event_id', async (req, res) => {
             try {
                 const authID = assistanceDAO.getIdFromDecodedToken(req);
                 if (authID == req.params.user_id) {
-                    const assistance = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.user_id, req.params.event_id);
+                    const assistance = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.event_id, req.params.user_id);
                     if (!assistance) {
                         await assistanceDAO.createAssistance(req);
                         return res.status(serverStatus.CREATED).json({ message: "Assistance created" });
@@ -89,7 +93,7 @@ router.delete('/:user_id/:event_id', async (req, res) => {
                 const authID = assistanceDAO.getIdFromDecodedToken(req);
               
                 if (authID == req.params.user_id) {
-                    const assistance = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.user_id, req.params.event_id);
+                    const assistance = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.event_id, req.params.user_id);
 
                     if (assistance) {
                         await assistanceDAO.deleteAssistanceFromEvent(req.params.user_id, req.params.event_id);

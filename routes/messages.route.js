@@ -30,6 +30,7 @@ router.post('/', async (req, res) => {
     }
 })
 
+
 // GET users that are messaging the authenticated user
 router.get('/users', async (req, res) => {
     if (mdao.isValidToken(req)) {
