@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-    res.json({ error: "404"})
+    res.json({ error: "serverStatus.NOT_FOUND"})
 })
 
 app.listen(port, () => {

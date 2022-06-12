@@ -1,14 +1,18 @@
 const express = require('express')
 const router = express.Router()
+const serverStatus= require('../server_status');
 
 const MessagesDAO = require("../DAO/messages_DAO.js");
 const mdao = new MessagesDAO()
-const serverStatus= require('../server_status');
+
 
 const UsersDAO = require("../DAO/users_DAO.js");
 const udao = new UsersDAO()
 
-// POST of a message between two users via body (content, sender_id, receiver_id)
+/**
+ * Creates message
+ * @param {Object} req - request object
+ */
 router.post('/', async (req, res) => {
     if (mdao.isValidToken(req)) {
 
@@ -16,36 +20,41 @@ router.post('/', async (req, res) => {
         const receiver = await udao.getUserById(req.body.user_id_recived)
 
         if (sender.length === 0) {
-            res.status(404).json({ message: "Sender not found" })
+            res.status(serverStatus.NOT_FOUND).json({ message: "Sender not found" })
         } else if (receiver.length === 0) {
-            res.status(404).json({ message: "Receiver not found" })
+            res.status(serverStatus.NOT_FOUND).json({ message: "Receiver not found" })
         } else if (req.body.user_id_send === req.body.user_id_recived) {
-            res.status(400).json({ message: "Sender and receiver are the same" })
+            res.status(serverStatus.BAD_REQUEST).json({ message: "Sender and receiver are the same" })
         } else {
             const message = await mdao.postMessage(req.body)
-            return res.status(200).json(message)
+            return res.status(serverStatus.OK).json(message)
         }
     } else {
-        res.status(401).send("Invalid token")
+        res.status(serverStatus.UNAUTHORIZED).send("Invalid token")
     }
 })
 
-
-// GET users that are messaging the authenticated user
+/**
+ * Gets all external users that are messaging the authenticated user
+ * @param {Object} req authenticated token
+ */
 router.get('/users', async (req, res) => {
     if (mdao.isValidToken(req)) {
         const users = await mdao.getUsersMessaging(mdao.getIdFromDecodedToken(req))
 
         if (users.length === 0) {
-            return res.status(201).json({message: "No messages found"})
+            return res.status(serverStatus.CREATED).json({message: "No messages found"})
         }
 
-        return res.status(200).json(users)
+        return res.status(serverStatus.OK).json(users)
     } else {
-        res.status(401).send("Invalid token")
+        res.status(serverStatus.UNAUTHORIZED).send("Invalid token")
     }
 })
-
+/**
+ * Gets all messages between the external user with matching id and the authenticated user
+ * @param {Object} req authenticated token
+ */
 router.get('/:id', async (req, res) => {
     if(mdao.isValidToken(req)) {
         if(!isNaN(req.params.id)){
@@ -53,15 +62,15 @@ router.get('/:id', async (req, res) => {
                 const messages = await mdao.getMessagesBetweenAuthenticatedUserAndUser(mdao.getIdFromDecodedToken(req), req.params.id)
 
                 if (messages.length === 0) {
-                    return res.status(201).json({message: "No messages found"})
+                    return res.status(serverStatus.CREATED).json({message: "No messages found"})
                 }
 
-                return res.status(200).json(messages)
+                return res.status(serverStatus.OK).json(messages)
             }catch(error){
-                return res.status(500).send("Error while loading messages")
+                return res.status(serverStatus.INTERNAL_SERVER_ERROR).send("Error while loading messages")
             } 
         }
-    }res.status(401).send("Invalid token")
+    }res.status(serverStatus.UNAUTHORIZED).send("Invalid token")
 })
 
 

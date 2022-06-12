@@ -17,11 +17,11 @@ class AssistencesDAO extends GenericDAO {
         return results;
     }
     async getAssistencesByAuthUserIdEventId(event_id, user_id){
-        const [results]= await global.connection.promise().query("SELECT * FROM ?? WHERE user_id = ? AND event_id = ?", [this.tabla, event_id, user_id]);
+        const [results]= await global.connection.promise().query("SELECT * FROM ?? WHERE user_id = ? AND event_id = ?", [this.tabla, user_id, event_id]);
         return results;
     }
-    async getAssistencesByEventIdUserId(req){
-        const [results]= await global.connection.promise().query("SELECT * FROM ?? WHERE event_id = ? AND user_id = ?", [this.tabla, req.params.id, req.params.user_id]);
+    async getAssistencesByEventIdUserId(event_id,user_id){
+        const [results]= await global.connection.promise().query("SELECT * FROM ?? WHERE event_id = ? AND user_id = ?", [this.tabla, event_id, user_id]);
         return results;
     }
     async modifyAssitanceByIdAsAuthenticated(assistance, user_id, id){
