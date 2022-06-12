@@ -42,6 +42,10 @@ class AssistencesDAO extends GenericDAO {
     async createAssistance(req){
         await global.connection.promise().query("INSERT INTO ?? (user_id, event_id) VALUES (?, ?)",[this.tabla, req.params.user_id, req.params.event_id]);
     }
+
+    async addAssistance(req){
+        await global.connection.promise().query("INSERT INTO ?? (user_id, event_id) VALUES (?, ?)",[this.tabla, req.params.user_id, req.params.id]);
+    }
 }
 
 module.exports= AssistencesDAO;

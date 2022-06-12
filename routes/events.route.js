@@ -228,16 +228,18 @@ router.get('/:id/assistences', async (req, res) => {
         }
     }
 })
-//TODO no borra bien assitances 
+
 router.delete('/:id/assistances', async (req, res) => {
     if (eventsDAO.isValidToken(req)) {
         let id = req.params.id;
         if (!isNaN(id)) {
             try {
                 let user_id = eventsDAO.getIdFromDecodedToken(req);
-                let assistance = await assistenceDAO.getAssistencesByAuthUserIdEventId(id, user_id);
-
-                if (assistance){
+                console.log(user_id);
+                console.log(id);
+                let assistance = await assistenceDAO.getAssistencesByAuthUserIdEventId(user_id, id);
+                console.log(assistance)
+                if (assistance.length!==0){
                     await assistenceDAO.deleteAssistanceFromEvent(id, user_id);
                     //return event
                     return res.status(200).send("Assistance deleted");
@@ -280,20 +282,44 @@ router.get('/:id/assistances/:user_id', async (req, res) => {
     return res.status(401).send("Unauthorized");
 
 })
-//TODO 
-router.post('/:id/assistances/:user_id', async (req, res) => {})      
+
+router.post('/:id/assistances/:user_id', async (req, res) => {
+    if (eventsDAO.isValidToken(req)) {
+        let id = req.params.id;
+        let user_id = req.params.user_id;
+
+        if (!isNaN(id) && !isNaN(user_id)) {
+            try {
+                let assistance = await assistenceDAO.getAssistencesByEventIdUserId(req);
+                //check if there is an event
+                if (assistance.length === 0) {
+                   await assistenceDAO.addAssistance(req);
+                   return res.status(200).send("Assistance created");
+                }
+                //return event
+             return res.status(201).send("Assistance was already added");
+            } catch (error) {
+                //return error
+                return res.status(500).send("Error getting event with : id" + id);
+            }
+        } else {
+            return res.status(400).send("Invalid id");
+        }
+    }
+    res.status(401).send("Unauthorized");
+})      
 router.get('/', async (req, res) => {
     try {
         const events = await eventsDAO.getAll();
         //check if there are events
         if (events.length === 0) {
-            res.status(404).send("No events found")
+            return res.status(404).send("No events found")
         }
         //return events
-        res.status(200).json(events);
+       return  res.status(200).json(events);
     } catch (error) {
         //return error
-        res.status(500).send("Error getting events");
+        return res.status(500).send("Error getting events");
     }
 
 })
