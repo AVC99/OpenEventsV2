@@ -209,7 +209,8 @@ router.get('/search', async (req, res) => {
  * @param {*} req with authorization token
  */
 router.get('/:id', async (req, res) => {
-    let id = req.params.id;
+
+    console.log("entra en solo id")
     if (!isNaN(id)) {
         try {
             let event = await eventsDAO.getEventById(id);
@@ -239,16 +240,16 @@ router.get('/:id/assistances', async (req, res) => {
                 let assistance = await assistenceDAO.getAssistancesByEventID(id);
                 //check if there is an event
                 if (assistance.length === 0) {
-                    res.status(serverStatus.NOT_FOUND).send("No event found with : id = " + id)
+                   return  res.status(serverStatus.NOT_FOUND).send("No event found with : id = " + id)
                 }
                 //return event
-                res.status(serverStatus.OK).json(assistance);
+               return  res.status(serverStatus.OK).json(assistance);
             } catch (error) {
                 //return error
-                res.status(serverStatus.INTERNAL_SERVER_ERROR).send("Error getting event with : id" + id);
+                return res.status(serverStatus.INTERNAL_SERVER_ERROR).send("Error getting event with : id" + id);
             }
         } else {
-            res.status(serverStatus.BAD_REQUEST).send("Invalid id");
+           return res.status(serverStatus.BAD_REQUEST).send("Invalid id");
         }
     }
 })

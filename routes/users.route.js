@@ -61,14 +61,14 @@ router.post('/login', async (req, res) => {
         return res.status(serverStatus.NOT_FOUND).json({ message: "User not found" })
     } else {
         //desecrypting the password
-        const passwordIsValid = await bcrypt.compare(req.body.password, user[0].password)
+        const passwordIsValid = await bcrypt.compare(req.body.password, user.password)
         
         if (!passwordIsValid) {
             return res.status(serverStatus.UNAUTHORIZED).json({ message: "Invalid password" })
         } else {
             // create a token
             const jwt = require('jsonwebtoken')
-            const token = jwt.sign({ id: user[0].id, name: user[0].name, email: user[0].email }, process.env.JWT_KEY)
+            const token = jwt.sign({ id: user.id, name: user.name, email: user.email }, process.env.JWT_KEY)
             return res.status(serverStatus.OK).json({ token: token })
         }
     }
