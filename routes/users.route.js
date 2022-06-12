@@ -198,6 +198,9 @@ router.put('/', async (req, res) => {
 })
 
 // GET user statistics by user id
+//Gets the user statistics: average score given for events "puntuation", number of comments written for
+//events, and percentage of users with lower number of comments than this user.
+
 router.get('/:id/statistics', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)

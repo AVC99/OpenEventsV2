@@ -70,6 +70,21 @@ class EventsDAO extends GenericDAO {
     async deleteEvent(id){
         await global.connection.promise().query("DELETE FROM ?? WHERE id = ?", [this.tabla, id]);
     }
+    async getAllOldEvents(){
+        const [results] = await global.connection.promise().query("SELECT * FROM ?? WHERE eventEnd_date < NOW()", [this.tabla])
+        return results;
+    }
+
+    async getAllAssistancesByID(id){
+        const [results]= await global.connection.promise().query("SELECT * FROM assistance WHERE event_id = ?", [id]);
+        return results;
+    }
+
+    async getBestEvents(){
+        const [results]= await global.connection.promise().query("Select (AVG(a.puntuation))AS average, e.owner_id FROM assistance AS a, events AS e, users AS u WHERE " +
+        "e.owner_id=u.id AND e.id=a.event_id AND e.eventEnd_Date < NOW() GROUP BY e.owner_id ORDER BY average DESC", [this.tabla]);
+        return results;
+    }
 }
 
 module.exports = EventsDAO;

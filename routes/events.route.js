@@ -80,7 +80,6 @@ router.put('/:id/assistances', async (req, res) => {
                 await assistenceDAO.modifyAssitanceByIdAsAuthenticated(assistance,user_id, req.params.id); 
                 return res.status(200).send(assistance);
             } catch (error) {
-                console.log(error);
                 return res.status(500).send("Error updating the event");
             }
         }
@@ -92,7 +91,6 @@ router.put('/:id', async (req, res) => {
     if (await eventsDAO.isValidToken(req)) {
 
         if (!isNaN(req.params.id)) {
-            console.log("entro");
             let eventId = req.params.id;
             try {
                 let event = await eventsDAO.getEventById(eventId);
@@ -136,34 +134,24 @@ router.delete('/:id', async (req, res) => {
         }
     } res.status(401).send("Unauthorized");
 })
+
 //Gets all future events in descending order based on the average score of the creator's old events
 router.get('/best', async (req, res) => {
-    //TODO try doing by js 
     if (eventsDAO.isValidToken(req)) {
         try {
-            let allUsers= await usersDAO.getAll();
-            let events= await eventsDAO.getAll();
-            var userScoreArray= [];
-            
-            for (const user of allUsers) {
-                let totaluserScore= 0;
-                for (const event of events) {
-                   let score=await usersDAO.getUserStatisticsAvgScoreOfOldEvents(user.id, event.id);
-                  totaluserScore= totaluserScore+score;
-                  console.log(totaluserScore);
-                   //userScoreArray.score = await usersDAO.getUserStatisticsAvgScoreOfOldEvents(user.id);
+           let bestOldEventOwners = await eventsDAO.getBestEvents();
+            let futureEvents= await eventsDAO.getFutureEvents();
+            let bestEvents = [];
+
+            for (const event of futureEvents) {
+                for (const owner of bestOldEventOwners) {
+                    if (event.owner_id === owner.owner_id ) {
+                        bestEvents.push(event);
+                    }
                 }
-                let userScore={
-                    user_id: user.id,
-                    score: totaluserScore
-               }
-               Array.prototype.push.call(userScoreArray, userScore);
-            };
-            console.log(userScoreArray)
-            
-            return res.status(200).send(userScoreArray);
+            }
+            return res.status(200).send(bestEvents) 
         }catch(error){
-            console.log(error);
             return res.status(500).send("Error getting the users");
         }
     }
@@ -173,14 +161,11 @@ router.get('/best', async (req, res) => {
 router.get('/search', async (req, res) => {
     if (eventsDAO.isValidToken(req)) {
         let { location = '', date = '', keyword = '' } = req.query;
-        console.log(location);
         try {
             let events = await eventsDAO.getAll();
             if (events.length === 0) {
                 return res.status(404).send("No events found")
             }
-            console.log(events)
-
             events = events.filter(event => {
                 if (event.name.toLowerCase().includes(keyword.toLowerCase())) {
                     if (event.location.toLowerCase().includes(location.toLowerCase())) {

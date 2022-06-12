@@ -60,7 +60,7 @@ class UsersDAO extends GenericDAO {
             .query("SELECT AVG(a.puntuation)FROM assistance AS a, events AS e WHERE a.user_id = ? AND e.id = ? AND "+
             " e.eventEnd_date < NOW()", 
             [user_id, event_id])
-
+        console.log(results)
         return results;
     }
 
