@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
 
 
         }
-        res.status(401).send("Unauthorized");
+        return res.status(401).send("Unauthorized");
     }
 })
 
@@ -125,7 +125,7 @@ router.delete('/:id', async (req, res) => {
                 let event = await eventsDAO.getEventById(eventId);
                 if (event) {
                     await eventsDAO.deleteEvent(eventId);
-                    return res.status(200).send("Event deleted" + event);
+                    return res.status(200).json({message: event.id + " has been deleted"});
                 }
                 return res.status(200).send("Event not found");
             } catch (error) {
@@ -193,7 +193,7 @@ router.get('/:id', async (req, res) => {
         try {
             let event = await eventsDAO.getEventById(id);
             //check if there is an event
-            if (event.length === 0) {
+            if (!event) {
                 res.status(404).send("No event found with : id = " + id)
             }
             //return event
@@ -207,18 +207,18 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.get('/:id/assistences', async (req, res) => {
+router.get('/:id/assistances', async (req, res) => {
     if (eventsDAO.isValidToken(req)) {
         let id = req.params.id;
         if (!isNaN(id)) {
             try {
-                let event = await eventsDAO.getEventById(id);
+                let assistance = await assistenceDAO.getAssistancesByEventID(id);
                 //check if there is an event
-                if (event.length === 0) {
+                if (assistance.length === 0) {
                     res.status(404).send("No event found with : id = " + id)
                 }
                 //return event
-                res.status(200).json(event);
+                res.status(200).json(assistance);
             } catch (error) {
                 //return error
                 res.status(500).send("Error getting event with : id" + id);

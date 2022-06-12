@@ -10,6 +10,11 @@ const fdao = new FriendsDAO()
 router.get('/', async (req, res) => {
   if (fdao.isValidToken(req)) {
     const friends = await fdao.getAllFriendsByUserId(fdao.getIdFromDecodedToken(req))
+
+    if (friends.length === 0) {
+      return res.status(201).json({message: "No friends :("})
+    }
+
     return res.status(200).json(friends)
   } else {
     return res.status(401).json({ message: "Access denied" })
@@ -20,6 +25,11 @@ router.get('/', async (req, res) => {
 router.get('/requests', async (req, res) => {
   if (fdao.isValidToken(req)) {
     const requests = await fdao.getAllFriendRequestsByUserId(fdao.getIdFromDecodedToken(req))
+
+    if (requests.length === 0) {
+      return res.status(201).json({message: "No requests found"})
+    }
+
     res.status(200).json(requests)
   } else {
     res.status(401).json({ message: "Access denied" })

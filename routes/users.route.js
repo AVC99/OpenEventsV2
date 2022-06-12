@@ -79,7 +79,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             return res.status(200).json(user[0])
@@ -107,7 +107,7 @@ router.get('/search/:keyword', async (req, res) => {
 router.get('/:id/events', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const events = await udao.getUserEvents(req.params.id)
@@ -120,7 +120,7 @@ router.get('/:id/events', async (req, res) => {
 router.get('/:id/events/future', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const events = await udao.getUserFutureEvents(req.params.id)
@@ -149,10 +149,15 @@ router.get('/:id/events/finished', async (req, res) => {
 router.get('/:id/events/current', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const events = await udao.getUserCurrentEvents(req.params.id)
+
+            if (events.length === 0) {
+                return res.status(201).json({message: "No events"})
+            }
+
             return res.status(200).json(events)
         }
     } return res.sendStatus(serverStatus.UNAUTHORIZED).send("Unauthorized");
@@ -162,17 +167,22 @@ router.get('/:id/events/current', async (req, res) => {
 router.get('/:id/friends', async (req, res) => {
     if (udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const friends = await udao.getUserFriends(req.params.id)
+
+            if (friends.length === 0) {
+                return res.status(201).json({message: "No friends :("})
+            }
+
             return res.status(200).json(friends)
         }
     } return res.sendStatus(serverStatus.UNAUTHORIZED).send("Unauthorized");
 })
 
 router.put('/', async (req, res) => {
-    if ( udao.isValidToken(req)) {
+    if (udao.isValidToken(req)) {
         try {
             const authenticatedID = await udao.getIdFromDecodedToken(req);
             const user = await udao.getUserById(authenticatedID);
@@ -207,7 +217,7 @@ router.put('/', async (req, res) => {
 router.get('/:id/statistics', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const stats1 = await udao.getUserStatisticsAvgScore(req.params.id)
@@ -238,7 +248,7 @@ router.delete('/', async (req, res) => {
 router.get('/:id/assistances', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const assistances = await udao.getUserAssistanceEvents(req.params.id)
@@ -261,10 +271,15 @@ router.get('/:id/assistances', async (req, res) => {
 router.get('/:id/assistances/future', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const assistances = await udao.getUserFutureAssistanceEvents(req.params.id)
+
+            if (assistances.length === 0) {
+                return res.status(201).json({message: "No events"})
+            }
+
             return res.status(200).json(assistances)
         }
     } else {
@@ -276,7 +291,7 @@ router.get('/:id/assistances/future', async (req, res) => {
 router.get('/:id/assistances/finished', async (req, res) => {
     if (await udao.isValidToken(req)) {
         const user = await udao.getUserById(req.params.id)
-        if (user.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         } else {
             const assistances = await udao.getUserPastAssistanceEvents(req.params.id)

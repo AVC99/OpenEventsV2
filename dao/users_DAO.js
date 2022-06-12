@@ -32,13 +32,6 @@ class UsersDAO extends GenericDAO {
         [this.tabla, user.name, user.last_name, user.email, user.password, user.image, user.id]) // updating the user       
     }
 
-    async countAllUsers() {
-        const [results] = await global.connection.promise()
-        .query("SELECT COUNT(*) as num_users FROM users")
-
-        return results;
-    }
-
     // get average of the ratings of a user in assistance table
     async getUserStatisticsNumComments(id) {
         const [results] = await global.connection.promise()
@@ -124,7 +117,7 @@ class UsersDAO extends GenericDAO {
 
     async getUserFriends (id) {
         const [results] = await global.connection.promise()
-        .query("SELECT * FROM ?? WHERE id = (SELECT user_id_friend FROM friends WHERE user_id = ? AND status = 1)", this.tabla, [id])
+        .query("SELECT * FROM ?? WHERE id = (SELECT user_id_friend FROM friends WHERE user_id = ? AND status = 1)", [this.tabla, id])
 
         return results;
     }
@@ -153,13 +146,6 @@ class UsersDAO extends GenericDAO {
     async getUserPastAssistanceEvents(id) {
         const [results] = await global.connection.promise()
         .query("SELECT e.* FROM events AS e, assistance as a WHERE e.id = a.event_id AND a.user_id = ? AND e.eventEnd_date < NOW();", [id])
-
-        return results;
-    }
-
-    async getEventPastAssistanceEvents(id) {
-        const [results] = await global.connection.promise()
-            .query("SELECT e.* FROM events AS e, assistance as a WHERE e.id = a.event_id AND a.user_id = ? AND e.eventEnd_date < NOW();", [id])
 
         return results;
     }

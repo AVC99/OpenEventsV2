@@ -35,6 +35,11 @@ router.post('/', async (req, res) => {
 router.get('/users', async (req, res) => {
     if (mdao.isValidToken(req)) {
         const users = await mdao.getUsersMessaging(mdao.getIdFromDecodedToken(req))
+
+        if (users.length === 0) {
+            return res.status(201).json({message: "No messages found"})
+        }
+
         return res.status(200).json(users)
     } else {
         res.status(401).send("Invalid token")
@@ -46,6 +51,11 @@ router.get('/:id', async (req, res) => {
         if(!isNaN(req.params.id)){
             try{
                 const messages = await mdao.getMessagesBetweenAuthenticatedUserAndUser(mdao.getIdFromDecodedToken(req), req.params.id)
+
+                if (messages.length === 0) {
+                    return res.status(201).json({message: "No messages found"})
+                }
+
                 return res.status(200).json(messages)
             }catch(error){
                 return res.status(500).send("Error while loading messages")
