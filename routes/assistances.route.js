@@ -45,7 +45,6 @@ router.put('/:user_id/:event_id', async (req, res) => {
 
                
             } catch (error) {
-                console.log(error);
                 return res.status(serverStatus.INTERNAL_SERVER_ERROR).send(error);
             }
         }
@@ -73,7 +72,6 @@ router.post('/:user_id/:event_id', async (req, res) => {
 
 
             } catch (error) {
-                console.log(error);
                 return res.status(serverStatus.INTERNAL_SERVER_ERROR).send(error);
             }
         }
@@ -89,8 +87,7 @@ router.delete('/:user_id/:event_id', async (req, res) => {
         if (!isNaN(req.params.user_id) && !isNaN(req.params.event_id)) {
             try {
                 const authID = assistanceDAO.getIdFromDecodedToken(req);
-                console.log(authID)
-                console.log(req.params.user_id)
+              
                 if (authID == req.params.user_id) {
                     const assistance = await assistanceDAO.getAssistancesByEventAndOwnerID(req.params.user_id, req.params.event_id);
 
@@ -102,7 +99,6 @@ router.delete('/:user_id/:event_id', async (req, res) => {
                 } else return res.status(serverStatus.UNAUTHORIZED).json({ message: "Unauthorized: You can not delete other users assistances" });
 
             } catch (error) {
-                console.log(error);
                 return res.status(serverStatus.INTERNAL_SERVER_ERROR).send(error);
             }
         }

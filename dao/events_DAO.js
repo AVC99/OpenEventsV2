@@ -57,7 +57,7 @@ class EventsDAO extends GenericDAO {
         await global.connection.promise().query("INSERT INTO ?? (name, owner_id, date, image, location, description, eventStart_date, " +
         " eventEnd_date, n_participators, type ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [this.tabla, name, owner_id,date, image, location,
              description, eventStart_date, eventEnd_date, n_participators, type]);
-            console.log("Event inserted");
+        
     }
 
     async updateEvent(event){

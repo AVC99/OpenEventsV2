@@ -16,7 +16,6 @@ const validator = require("../validator.js");
 router.post('/', async (req, res) => {
     if (await eventsDAO.isValidToken(req)) {
         let token = eventsDAO.getToken(req);
-        console.log(token);
         let decodedToken = jwt.verify(token, process.env.JWT_KEY);
         let ownerId = decodedToken.id;
 
@@ -36,7 +35,6 @@ router.post('/', async (req, res) => {
             n_participators: req.body.n_participators,
             type: req.body.type
         }
-        console.log(event);
         const isCorrectStartDate = validator(event.eventStart_date);
         const isCorrectEndDate = validator(event.eventEnd_date);
 
@@ -63,7 +61,6 @@ router.post('/', async (req, res) => {
 })
 
 router.put('/:id/assistances', async (req, res) => {
-    console.log("entra");
     if (await eventsDAO.isValidToken(req)) {
         if (!isNaN(req.params.id)) {
 
@@ -240,7 +237,6 @@ router.delete('/:id/assistances', async (req, res) => {
                 return res.status(200).send("Assistance deleted");
             } catch (error) {
                 //return error
-                console.log(error);
                 return res.status(500).send("Error getting event with : id" + id);
             }
 
@@ -252,7 +248,6 @@ router.delete('/:id/assistances', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        console.log("get all events");
         const events = await eventsDAO.getAll();
         //check if there are events
         if (events.length === 0) {
