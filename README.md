@@ -1,1 +1,1 @@
-# OpenEventsV2 A REST API sobre un gestor de eventos 
+# OpenEventsV2 is a  REST API about an event manager using express.
