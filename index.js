@@ -1,9 +1,15 @@
 require("dotenv").config();
 const mysql = require('mysql2');
-global.connection = mysql.createConnection(process.env.DATABASE_URL);
 const express = require('express')
 const morgan = require('morgan')
 const helmet = require("helmet");
+
+
+try {
+    global.connection = mysql.createConnection(process.env.DATABASE_URL);
+}catch (error){
+    console.log("Error al conectar a la base de datos");
+}
 
 const app = express()
 const port = 8080
